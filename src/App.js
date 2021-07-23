@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
 import './App.css';
+import Feed from './Feed.js'
 
 function App() {
   return (
-    <div className="App">
-      <h1>Start Here</h1>
+    <div className="app">
+      <Feed />
     </div>
   );
 }
