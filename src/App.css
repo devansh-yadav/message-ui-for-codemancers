@@ -1,6 +1,8 @@
 .app {
-    background-color: #ccc;
+    border: 2px solid black;
+    background-color: #cccccc;
     min-height: 100vh;
+    min-width: 100vw;
     display: flex;
     justify-content: center;
 }
