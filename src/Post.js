@@ -1,7 +1,7 @@
 import React from 'react';
 import './Post.css';
 
-function Post({message, gif}) {
+function Post({message, gifUrl}) {
 
     return (
         <>
@@ -9,8 +9,8 @@ function Post({message, gif}) {
                 <p>{message}</p>
             </div>
 
-            {gif === "" ? null : <div className="post-gif">
-                <img src={gif} alt="GIF" />
+            {gifUrl === "" ? null : <div className="post-gif">
+                <img src={gifUrl} alt="GIF" />
             </div>}
             
             <div className="post-options">

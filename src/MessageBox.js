@@ -11,13 +11,19 @@ function MessageBox({ setPost }) {
     })
     const [url, setUrl] = useState('')
 
+    
+
     const handleSubmit = () => {
+        
+        url || message ?
         setPost(prev => {
-            return [...prev, {
+            return [{
                 url: url,
                 msg: message
-            }]
+            }, ...prev]
         })
+        :
+        alert("Enter something")
 
         setMessage('')
         setSearchTerm('')
@@ -32,7 +38,7 @@ function MessageBox({ setPost }) {
         })
     }
 
-    const idHandler = event => {
+    const urlHandler = event => {
         setUrl(event.target.src)
         setState({
             results: [],
@@ -41,43 +47,52 @@ function MessageBox({ setPost }) {
     }
 
     const renderSearchResults = () => {
-
         const results = state.results
-        // return results.length ? (results.map((result, index) => {
-        //     const url = `https://media.giphy.com/media/${result.id}/giphy.gif`
-        //     return (
-        //         <img src={url} alt="GIF" key={result.id} onClick={idHandler} />
-        //     )
-        // })
-        // ) :
-        //     null
-
-        console.log(results)
-
-        return(results && results.map((result, index) => {
-            const url = `https://media.giphy.com/media/${result.id}/giphy.gif`
+        return ( results && results.map(result => {
+            const url = result.images.original.webp
             return (
-                <img src={url} alt="GIF" key={result.id} onClick={idHandler} />
+                <img src={url} alt="GIF" key={result.id} onClick={urlHandler} />
             )
         })
-        )
+        ) 
+    }
+
+    const loader = () => {
+        return <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" className={`${state.loading ? 'show' : 'hide'}`} alt="loader" />
     }
 
     useEffect(() => {
-        fetch(`https://api.giphy.com/v1/gifs/search?api_key=BLroI0ezuXaE5e6XjBH6yLpRKZxOaVzv&q=${searchTerm}&limit=4`)
+
+        const axios = require('axios')
+        const CancelToken = axios.CancelToken
+        const source = CancelToken.source()
+
+        axios.get(`https://api.giphy.com/v1/gifs/search?api_key=BLroI0ezuXaE5e6XjBH6yLpRKZxOaVzv&q=${searchTerm}&limit=5`, {
+            cancelToken: source.token
+        })
             .then(response => {
-                response.json()
-                    .then(data => {
-                        setState({
-                            results: data.data,
-                            loading: true
-                        }
-                        )
-                    })
+                setState({
+                    results: response.data.data,
+                    loading: false
+                })
+
             })
-            .catch(err => {
-                console.log(err)
-            });
+            .catch(error => {
+                if (axios.isCancel(error)) {
+                    // Handle if request was cancelled
+                    console.log('Request canceled', error.message);
+                    return null
+                } else {
+                    // Handle usual errors
+                    console.log('Something went wrong: ', error.message)
+                }
+            })
+
+        return function cleanup () {
+            if(source) {
+                source.cancel()
+            }
+        }
 
     }, [searchTerm])
 
@@ -102,6 +117,7 @@ function MessageBox({ setPost }) {
                 </form>
                 {url ? <img src={url} alt="GIF" className="post-image" /> : null}
                 <div className="fetch-results">
+                    {loader()}
                     {renderSearchResults()}
                 </div>
 
