@@ -104,4 +104,8 @@ div:empty {
     .message-box-top > form > input {
         margin-top: 10px;
     }
+
+    .fetch-results {
+        top: 125px;
+    }
 }
